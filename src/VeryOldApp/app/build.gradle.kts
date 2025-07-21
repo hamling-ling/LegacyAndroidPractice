@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     kotlin("kapt")
-    id("com.google.dagger.hilt.android") version "2.48"
+    alias(libs.plugins.dagger.hilt.android)
 }
 
 android {
@@ -42,26 +42,26 @@ android {
 
 dependencies {
 
-    implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.appcompat:appcompat:1.1.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.constraintlayout)
 
     // ViewModel and LiveData
-    val lifecycle_version = "2.2.0"
-    implementation("androidx.lifecycle:lifecycle-extensions:$lifecycle_version")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     // Hilt
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-    implementation("com.google.code.gson:gson:2.9.0")
-    implementation("com.google.dagger:hilt-android:2.48")
-    kapt("com.google.dagger:hilt-android-compiler:2.48")
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+
+    // Json
+    implementation(libs.gson)
 
     // Unit Test
-    testImplementation("com.google.dagger:hilt-android-testing:2.48")
-    testImplementation("junit:junit:4.13.2")
+    testImplementation(libs.hilt.android.testing)
+    testImplementation(libs.junit)
 
     // Android Unit Test
-    androidTestImplementation("androidx.test:runner:1.4.0")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
+    androidTestImplementation(libs.androidx.runner)
+    androidTestImplementation(libs.androidx.espresso.core)
 }
