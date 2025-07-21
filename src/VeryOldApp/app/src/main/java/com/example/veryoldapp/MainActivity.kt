@@ -3,15 +3,23 @@ package com.example.veryoldapp
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
+import com.example.veryoldapp.databinding.ActivityMainBinding
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.Timer
 import java.util.TimerTask
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     companion object {
         const val TAG = "MainActivity"
     }
+
+    private lateinit var binding: ActivityMainBinding
+    private val mainViewModel: MainViewModel by viewModels()
 
     val timer = Timer()
     class MyTask : TimerTask() {
@@ -24,6 +32,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding.lifecycleOwner = this
+        binding.viewModel = mainViewModel
 
         Log.i(TAG, "onCreate")
 
