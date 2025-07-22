@@ -16,6 +16,6 @@ class MainViewModel @Inject constructor (
         get() = _text
 
     fun updateText() {
-        _text.value = api.callApi()
+        _text.postValue(api.callApi())
     }
 }
