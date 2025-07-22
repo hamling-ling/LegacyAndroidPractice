@@ -16,7 +16,8 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        //testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.example.veryoldapp.HiltTestRunner"
     }
 
     buildTypes {
@@ -38,6 +39,7 @@ android {
     buildFeatures {
         dataBinding = true
     }
+
 }
 
 dependencies {
@@ -48,10 +50,15 @@ dependencies {
 
     // ViewModel and LiveData
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     // Hilt
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.android)
+    implementation(libs.androidx.junit.ktx)
+    testImplementation(libs.androidx.core.testing)
+    testImplementation(libs.androidx.runner)
+    androidTestImplementation(libs.hilt.android.testing)
     kapt(libs.hilt.android.compiler)
 
     // Json
@@ -60,8 +67,12 @@ dependencies {
     // Unit Test
     testImplementation(libs.hilt.android.testing)
     testImplementation(libs.junit)
+    testImplementation(libs.androidx.core.testing)
 
     // Android Unit Test
     androidTestImplementation(libs.androidx.runner)
     androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.hilt.android.testing)
+    androidTestImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.core.testing)
 }
