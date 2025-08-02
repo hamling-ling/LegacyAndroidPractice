@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+This file should locate above androidTest directory because of a following issue.
+https://stackoverflow.com/questions/26244998/androidmanifest-in-androidtest-directory-being-ignored
+-->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.veryoldapp">
+
+    <application>
+        <!-- No android:name attribute needed here if using the default HiltTestApplication -->
+        <activity
+            android:name="com.example.veryoldapp.test.HiltTestActivity"
+            android:label="TestApplication"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

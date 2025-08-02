@@ -16,8 +16,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        //testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        testInstrumentationRunner = "com.example.veryoldapp.HiltTestRunner"
+        testInstrumentationRunner = "com.example.veryoldapp.CustomTestRunner"
     }
 
     buildTypes {
@@ -56,6 +55,7 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.android)
     implementation(libs.androidx.junit.ktx)
+    implementation(libs.androidx.ui.test.junit4.android)
     testImplementation(libs.androidx.core.testing)
     testImplementation(libs.androidx.runner)
     androidTestImplementation(libs.hilt.android.testing)
@@ -75,4 +75,5 @@ dependencies {
     androidTestImplementation(libs.hilt.android.testing)
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.androidx.core.testing)
+    androidTestImplementation("androidx.test:runner:1.5.0")
 }

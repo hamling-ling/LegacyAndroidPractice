@@ -2,7 +2,7 @@
 agp = "8.8.2"
 appcompatVersion = "1.7.1"
 coreKtxVersion = "1.16.0"
-espressoCoreVersion = "3.6.1"
+espressoCoreVersion = "3.5.0"
 gson = "2.11.0"
 hiltAndroid = "2.48"
 hiltAndroidCompiler = "2.48"
@@ -13,9 +13,10 @@ kotlin = "1.9.24"
 junit = "4.13.2"
 lifecycle = "2.9.2"
 constraintlayout = "2.2.1"
-runner = "1.6.2"
+runner = "1.5.0"
 junitKtx = "1.2.1"
 coreTesting = "2.2.0"
+uiTestJunit4Android = "1.8.3"
 
 
 [libraries]
@@ -33,6 +34,7 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 androidx-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "coreTesting" }
+androidx-ui-test-junit4-android = { group = "androidx.compose.ui", name = "ui-test-junit4-android", version.ref = "uiTestJunit4Android" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
