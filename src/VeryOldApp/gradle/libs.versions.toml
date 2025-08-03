@@ -13,6 +13,7 @@ kotlin = "1.9.24"
 junit = "4.13.2"
 lifecycle = "2.9.2"
 constraintlayout = "2.2.1"
+media3 = "1.5.0"
 runner = "1.5.0"
 junitKtx = "1.2.1"
 coreTesting = "2.2.0"
@@ -35,6 +36,10 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 androidx-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "coreTesting" }
 androidx-ui-test-junit4-android = { group = "androidx.compose.ui", name = "ui-test-junit4-android", version.ref = "uiTestJunit4Android" }
+androidx-media3-player = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3" }
+androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3" }
+androidx-media3-session = { group = "androidx.media3", name = "media3-session", version.ref = "media3" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
