@@ -1,6 +1,7 @@
 package com.example.hellostatemachine.statemachine
 
 import com.example.hellostatemachine.MyActionParam
+import com.example.hellostatemachine.statemachine.StateMachine.Companion.INITIAL_STATE_NAME
 import kotlinx.serialization.json.Json
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -85,12 +86,12 @@ class StateMachineTest {
     fun setUp() {
         states = Json.decodeFromString<StateMachineDefinition<MyActionParam>>(jsonString)
 
-        states["initial"]!!.transitions["doSomething"]!!.action = { param ->
+        states[INITIAL_STATE_NAME]!!.transitions["doSomething"]!!.action = { param ->
             println("initial.doSomething called")
             println("\tparam1:${param.param1}")
             println("\tparam2:${param.param2}")
         }
-        states["initial"]!!.transitions["doSomethingElse"]!!.action = { param ->
+        states[INITIAL_STATE_NAME]!!.transitions["doSomethingElse"]!!.action = { param ->
             println("initial.doSomethingElse called")
             println("\tparam1:${param.param1}")
             println("\tparam2:${param.param2}")

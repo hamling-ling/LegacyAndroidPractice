@@ -17,7 +17,7 @@ class StateMachine<T>(private val _stateMachineDef:StateMachineDefinition<T>) {
         get() = synchronized(_lock) { _currentState.name }
 
     init {
-        _currentState = _stateMachineDef["initial"]!!
+        _currentState = _stateMachineDef[INITIAL_STATE_NAME]!!
     }
 
     // イベントを処理して状態遷移
