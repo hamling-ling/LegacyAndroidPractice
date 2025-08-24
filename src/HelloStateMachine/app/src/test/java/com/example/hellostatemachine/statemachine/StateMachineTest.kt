@@ -2,12 +2,17 @@ package com.example.hellostatemachine.statemachine
 
 import com.example.hellostatemachine.MyActionParam
 import com.example.hellostatemachine.statemachine.StateMachine.Companion.INITIAL_STATE_NAME
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class StateMachineTest {
 
     private lateinit var states: StateMachineDefinition<MyActionParam>
@@ -57,8 +62,17 @@ class StateMachineTest {
                         "param1": "param1 for processing.processing.processing_done",
                         "param2": "param2 for processing.processing.processing_done"
                       }
+                    },
+                    {
+                      "eventName": "timeout",
+                      "nextStateName": "fail",
+                      "param": {
+                        "param1": "param1 for processing.processing.timeout",
+                        "param2": "param2 for processing.processing.timeout"
+                      }
                     }
-                  ]
+                  ],
+                  "timeoutSec": 1
                 }
               ],
               "transitionList": [
@@ -145,7 +159,7 @@ class StateMachineTest {
 
     @Test
     fun testSuccess() {
-        val machine = StateMachine(states)
+        val machine = StateMachine(states, StandardTestDispatcher())
         assertEquals(INITIAL_STATE_NAME, machine.currentStateName)
 
         machine.processEvent("do_something")
@@ -163,7 +177,7 @@ class StateMachineTest {
 
     @Test
     fun testFail() {
-        val machine = StateMachine(states)
+        val machine = StateMachine(states, StandardTestDispatcher())
         assertEquals(INITIAL_STATE_NAME, machine.currentStateName)
 
         machine.processEvent("do_something")
@@ -174,5 +188,32 @@ class StateMachineTest {
 
         machine.processEvent("reset")
         assertEquals(INITIAL_STATE_NAME, machine.currentStateName)
+    }
+
+    @Test
+    fun testTimeout() {
+        val dispatcher = StandardTestDispatcher()
+        runTest(dispatcher) {
+            val machine = StateMachine(states, dispatcher)
+            assertEquals(INITIAL_STATE_NAME, machine.currentStateName)
+
+            machine.processEvent("do_something")
+            assertEquals("preparing", machine.currentStateName)
+
+            machine.processEvent("prep_done")
+            assertEquals("processing", machine.currentStateName)
+
+            var counter = 0
+            while(machine.currentStateName == "processing" && counter < 10) {
+                advanceTimeBy(1 * 1000)
+                Thread.sleep(100)
+                counter++
+            }
+            assertEquals("fail", machine.currentStateName)
+
+            machine.processEvent("reset")
+            assertEquals(INITIAL_STATE_NAME, machine.currentStateName)
+        }
+
     }
 }
