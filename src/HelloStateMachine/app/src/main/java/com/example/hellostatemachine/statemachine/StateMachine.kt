@@ -1,26 +1,40 @@
 package com.example.hellostatemachine.statemachine
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.runBlocking
 import java.util.concurrent.locks.ReentrantLock
 
 
 // ステートマシンの実装
-class StateMachine<T>(private val _stateMachineDef:StateMachineDefinition<T>) {
+class StateMachine<T>(
+    private val _stateMachineDef:StateMachineDefinition<T>,
+    private val _dispatcher: CoroutineDispatcher
+) {
 
     companion object {
         const val INITIAL_STATE_NAME = "initial"
+        const val TIMEOUT_EVENT_NAME = "timeout"
     }
 
     private var _parents = mutableListOf<State<T>>()
     private var _currentState: State<T> = trackDeepestFirstState(_stateMachineDef[INITIAL_STATE_NAME]!!, _parents)
-
     private val _lock = ReentrantLock()
+    private val _timer = OneShotTimer(_dispatcher)
 
     val currentStateName: String
         get() = synchronized(_lock) { _currentState.name }
 
+    val currentStateFullName: String
+        get() = synchronized(_lock) {
+            _parents.joinToString(".") { it.name } + "." + _currentState.name
+        }
+
     // Process Event then Transit State
     fun processEvent(event: String) {
         synchronized(_lock) {
+            // Cancel timer
+            runBlocking { _timer.cancel() }
+
             findStateWithTransition(_currentState, _parents, event)?.let { stateParentPair ->
                 val state = stateParentPair.first
                 val parents = stateParentPair.second
@@ -34,6 +48,13 @@ class StateMachine<T>(private val _stateMachineDef:StateMachineDefinition<T>) {
 
                     _currentState = nextState
                     _parents = nextParents.toMutableList()
+
+                    // Set timeout timer
+                    _currentState.timeoutSec?.let {
+                        runBlocking { _timer.start(it * 1000) {
+                            processEvent(TIMEOUT_EVENT_NAME)
+                        } }
+                    }
                 }
             }
         }
