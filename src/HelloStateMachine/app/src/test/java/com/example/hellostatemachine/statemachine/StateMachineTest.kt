@@ -17,63 +17,85 @@ class StateMachineTest {
           "states": [
             {
               "name": "${StateMachine.INITIAL_STATE_NAME}",
+              "childrenList": [],
               "transitionList": [
                 {
-                  "eventName": "doSomething",
-                  "nextStateName": "done",
+                  "eventName": "do_something",
+                  "nextStateName": "in_process",
                   "param": {
-                    "param1": "my param1 for initial.doSomething",
-                    "param2": "my param2 for initial.doSomething"
+                    "param1": "param1 for initial.do_something",
+                    "param2": "param2 for initial.do_something"
                   }
+                }
+              ]
+            },
+            {
+              "name": "in_process",
+              "childrenList": [
+                {
+                  "name": "preparing",
+                  "childrenList": [],
+                  "transitionList": [
+                    {
+                      "eventName": "prep_done",
+                      "nextStateName": "processing",
+                      "param": {
+                        "param1": "param1 for in_process.preparing.prep_done",
+                        "param2": "param2 for in_process.preparing.prep_done"
+                      }
+                    }
+                  ]
                 },
                 {
-                  "eventName": "doSomethingElse",
-                  "nextStateName": "done",
+                  "name": "processing",
+                  "childrenList": [],
+                  "transitionList": [
+                    {
+                      "eventName": "processing_done",
+                      "nextStateName": "done",
+                      "param": {
+                        "param1": "param1 for processing.processing.processing_done",
+                        "param2": "param2 for processing.processing.processing_done"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "transitionList": [
+                {
+                  "eventName": "interrupt",
+                  "nextStateName": "fail",
                   "param": {
-                    "param1": "my param1 for initial.doSomethingElse",
-                    "param2": "my param2 for initial.doSomethingElse"
+                    "param1": "param1 for in_process.interrupt",
+                    "param2": "param2 for in_process.interrupt"
                   }
                 }
               ]
             },
             {
               "name": "done",
+              "childrenList": [],
               "transitionList": [
                 {
-                  "eventName": "doSomething",
-                  "nextStateName": "done",
+                  "eventName": "reset",
+                  "nextStateName": "${StateMachine.INITIAL_STATE_NAME}",
                   "param": {
-                    "param1": "my param1 for done.doSomething",
-                    "param2": "my param2 for done.doSomething"
-                  }
-                },
-                {
-                  "eventName": "doSomethingElse",
-                  "nextStateName": "fail",
-                  "param": {
-                    "param1": "my param1 for done.doSomethingElse",
-                    "param2": "my param2 for done.doSomethingElse"
+                    "param1": "param1 for done.reset",
+                    "param2": "param2 for done.reset"
                   }
                 }
               ]
             },
             {
               "name": "fail",
+              "childrenList": [],
               "transitionList": [
                 {
-                  "eventName": "doSomething",
-                  "nextStateName": "done",
+                  "eventName": "reset",
+                  "nextStateName": "${StateMachine.INITIAL_STATE_NAME}",
                   "param": {
-                    "param1": "my param1 for fail.doSomething",
-                    "param2": "my param2 for fail.doSomething"
-                  }
-                },
-                {
-                  "eventName": "doSomethingElse",
-                  "nextStateName": "fail",
-                  "param": {
-                    "param1": "my param1 for fail.doSomethingElse",
-                    "param2": "my param2 for fail.doSomethingElse"
+                    "param1": "param1 for fail.reset",
+                    "param2": "param2 for fail.reset"
                   }
                 }
               ]
@@ -86,35 +108,32 @@ class StateMachineTest {
     fun setUp() {
         states = Json.decodeFromString<StateMachineDefinition<MyActionParam>>(jsonString)
 
-        states[INITIAL_STATE_NAME]!!.transitions["doSomething"]!!.action = { param ->
-            println("initial.doSomething called")
-            println("\tparam1:${param.param1}")
-            println("\tparam2:${param.param2}")
-        }
-        states[INITIAL_STATE_NAME]!!.transitions["doSomethingElse"]!!.action = { param ->
-            println("initial.doSomethingElse called")
+        states[INITIAL_STATE_NAME]!!.transitions["do_something"]!!.action = { param ->
+            println("initial.do_something event")
             println("\tparam1:${param.param1}")
             println("\tparam2:${param.param2}")
         }
 
-        states["done"]!!.transitions["doSomething"]!!.action = { param ->
-            println("done.doSomething called")
-            println("\tparam1:${param.param1}")
-            println("\tparam2:${param.param2}")
-        }
-        states["done"]!!.transitions["doSomethingElse"]!!.action = { param ->
-            println("done.doSomethingElse called")
+        states["in_process"]!!.children["preparing"]!!.transitions["prep_done"]!!.action = { param ->
+            println("in_process.preparing.prep_done event")
             println("\tparam1:${param.param1}")
             println("\tparam2:${param.param2}")
         }
 
-        states["fail"]!!.transitions["doSomething"]!!.action = { param ->
-            println("fail.doSomething called")
+        states["in_process"]!!.children["processing"]!!.transitions["processing_done"]!!.action = { param ->
+            println("in_process.processing.processing_done event")
             println("\tparam1:${param.param1}")
             println("\tparam2:${param.param2}")
         }
-        states["fail"]!!.transitions["doSomethingElse"]!!.action = { param ->
-            println("fail.doSomethingElse called")
+
+        states["done"]!!.transitions["reset"]!!.action = { param ->
+            println("done.reset event")
+            println("\tparam1:${param.param1}")
+            println("\tparam2:${param.param2}")
+        }
+
+        states["fail"]!!.transitions["reset"]!!.action = { param ->
+            println("fail.reset event")
             println("\tparam1:${param.param1}")
             println("\tparam2:${param.param2}")
         }
@@ -125,15 +144,35 @@ class StateMachineTest {
     }
 
     @Test
-    fun processEvent() {
+    fun testSuccess() {
         val machine = StateMachine(states)
-        machine.processEvent("doSomething")
+        assertEquals(INITIAL_STATE_NAME, machine.currentStateName)
+
+        machine.processEvent("do_something")
+        assertEquals("preparing", machine.currentStateName)
+
+        machine.processEvent("prep_done")
+        assertEquals("processing", machine.currentStateName)
+
+        machine.processEvent("processing_done")
         assertEquals("done", machine.currentStateName)
 
-        machine.processEvent("doSomethingElse")
+        machine.processEvent("reset")
+        assertEquals(INITIAL_STATE_NAME, machine.currentStateName)
+    }
+
+    @Test
+    fun testFail() {
+        val machine = StateMachine(states)
+        assertEquals(INITIAL_STATE_NAME, machine.currentStateName)
+
+        machine.processEvent("do_something")
+        assertEquals("preparing", machine.currentStateName)
+
+        machine.processEvent("interrupt")
         assertEquals("fail", machine.currentStateName)
 
-        machine.processEvent("doSomething")
-        assertEquals("done", machine.currentStateName)
+        machine.processEvent("reset")
+        assertEquals(INITIAL_STATE_NAME, machine.currentStateName)
     }
 }
