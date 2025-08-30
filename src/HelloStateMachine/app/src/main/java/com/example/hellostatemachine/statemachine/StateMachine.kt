@@ -40,7 +40,9 @@ class StateMachine<T>(
                 val parents = stateParentPair.second
 
                 val transition = state[event]!!
-                transition.action?.invoke(transition.param)
+                transition.actions.forEach { action ->
+                    action.action?.invoke(action.param)
+                }
 
                 findNextState(parents, transition.nextStateName)?.let { nextStateParentsPair ->
                     val nextState = nextStateParentsPair.first
