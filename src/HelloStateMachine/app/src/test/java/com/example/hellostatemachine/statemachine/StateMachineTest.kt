@@ -27,10 +27,14 @@ class StateMachineTest {
                 {
                   "eventName": "do_something",
                   "nextStateName": "in_process",
-                  "param": {
-                    "param1": "param1 for initial.do_something",
-                    "param2": "param2 for initial.do_something"
-                  }
+                  "actions": [
+                      {
+                          "param": {
+                            "param1": "param1 for initial.do_something",
+                            "param2": "param2 for initial.do_something"
+                          }
+                      }
+                  ]
                 }
               ]
             },
@@ -44,10 +48,14 @@ class StateMachineTest {
                     {
                       "eventName": "prep_done",
                       "nextStateName": "processing",
-                      "param": {
-                        "param1": "param1 for in_process.preparing.prep_done",
-                        "param2": "param2 for in_process.preparing.prep_done"
-                      }
+                      "actions": [
+                        {
+                          "param": {
+                           "param1": "param1 for in_process.preparing.prep_done",
+                           "param2": "param2 for in_process.preparing.prep_done"
+                          }
+                        }
+                      ]
                     }
                   ]
                 },
@@ -58,18 +66,26 @@ class StateMachineTest {
                     {
                       "eventName": "processing_done",
                       "nextStateName": "done",
-                      "param": {
-                        "param1": "param1 for processing.processing.processing_done",
-                        "param2": "param2 for processing.processing.processing_done"
-                      }
+                      "actions": [
+                        {
+                          "param": {
+                            "param1": "param1 for processing.processing.processing_done",
+                            "param2": "param2 for processing.processing.processing_done"
+                          }
+                        }
+                      ]
                     },
                     {
                       "eventName": "timeout",
                       "nextStateName": "fail",
-                      "param": {
-                        "param1": "param1 for processing.processing.timeout",
-                        "param2": "param2 for processing.processing.timeout"
-                      }
+                      "actions": [
+                        {
+                          "param": {
+                            "param1": "param1 for processing.processing.timeout",
+                            "param2": "param2 for processing.processing.timeout"
+                          }
+                        }
+                      ]
                     }
                   ],
                   "timeoutSec": 1
@@ -79,10 +95,14 @@ class StateMachineTest {
                 {
                   "eventName": "interrupt",
                   "nextStateName": "fail",
-                  "param": {
-                    "param1": "param1 for in_process.interrupt",
-                    "param2": "param2 for in_process.interrupt"
-                  }
+                  "actions": [
+                    {
+                      "param": {
+                        "param1": "param1 for in_process.interrupt",
+                        "param2": "param2 for in_process.interrupt"
+                      }
+                    }
+                  ]
                 }
               ]
             },
@@ -93,10 +113,14 @@ class StateMachineTest {
                 {
                   "eventName": "reset",
                   "nextStateName": "${StateMachine.INITIAL_STATE_NAME}",
-                  "param": {
-                    "param1": "param1 for done.reset",
-                    "param2": "param2 for done.reset"
-                  }
+                  "actions": [
+                    {
+                      "param": {
+                        "param1": "param1 for done.reset",
+                        "param2": "param2 for done.reset"
+                      }
+                    }
+                  ]
                 }
               ]
             },
@@ -107,10 +131,14 @@ class StateMachineTest {
                 {
                   "eventName": "reset",
                   "nextStateName": "${StateMachine.INITIAL_STATE_NAME}",
-                  "param": {
-                    "param1": "param1 for fail.reset",
-                    "param2": "param2 for fail.reset"
-                  }
+                  "actions": [
+                    {
+                      "param": {
+                        "param1": "param1 for fail.reset",
+                        "param2": "param2 for fail.reset"
+                      }
+                    }
+                  ]
                 }
               ]
             }
@@ -122,31 +150,31 @@ class StateMachineTest {
     fun setUp() {
         states = Json.decodeFromString<StateMachineDefinition<MyActionParam>>(jsonString)
 
-        states[INITIAL_STATE_NAME]!!.transitions["do_something"]!!.action = { param ->
+        states[INITIAL_STATE_NAME]!!.transitions["do_something"]!!.actions[0].action = { param ->
             println("initial.do_something event")
             println("\tparam1:${param.param1}")
             println("\tparam2:${param.param2}")
         }
 
-        states["in_process"]!!.children["preparing"]!!.transitions["prep_done"]!!.action = { param ->
+        states["in_process"]!!.children["preparing"]!!.transitions["prep_done"]!!.actions[0].action = { param ->
             println("in_process.preparing.prep_done event")
             println("\tparam1:${param.param1}")
             println("\tparam2:${param.param2}")
         }
 
-        states["in_process"]!!.children["processing"]!!.transitions["processing_done"]!!.action = { param ->
+        states["in_process"]!!.children["processing"]!!.transitions["processing_done"]!!.actions[0].action = { param ->
             println("in_process.processing.processing_done event")
             println("\tparam1:${param.param1}")
             println("\tparam2:${param.param2}")
         }
 
-        states["done"]!!.transitions["reset"]!!.action = { param ->
+        states["done"]!!.transitions["reset"]!!.actions[0].action = { param ->
             println("done.reset event")
             println("\tparam1:${param.param1}")
             println("\tparam2:${param.param2}")
         }
 
-        states["fail"]!!.transitions["reset"]!!.action = { param ->
+        states["fail"]!!.transitions["reset"]!!.actions[0].action = { param ->
             println("fail.reset event")
             println("\tparam1:${param.param1}")
             println("\tparam2:${param.param2}")

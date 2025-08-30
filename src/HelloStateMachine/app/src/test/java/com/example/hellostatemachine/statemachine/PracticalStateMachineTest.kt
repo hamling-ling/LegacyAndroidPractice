@@ -83,15 +83,19 @@ class PracticalStateMachineTest {
             {
                 "eventName": "do_something",
                 "nextStateName": "in_process",
-                "param": {
-                  "type": "PlayContentActionParam",
-                  "actionType": "PlayContents",
-                  "contents": ["a.mp4", "b.mp4"]
-                }
+                "actions": [
+                  {
+                    "param": {
+                      "type": "PlayContentActionParam",
+                      "actionType": "PlayContents",
+                      "contents": ["a.mp4", "b.mp4"]
+                    }
+                  }
+                ]  
             }
             """.trimIndent()
         )
-        val param = transition.param
+        val param = transition.actions.first().param
         assertTrue(param is PlayContentActionParam)
         val actionParam = param as PlayContentActionParam
         assertEquals(actionParam.actionType, "PlayContents")
@@ -112,17 +116,21 @@ class PracticalStateMachineTest {
                     {
                         "eventName": "do_something",
                         "nextStateName": "in_process",
-                        "param": {
-                            "type": "GoToActionParam",
-                            "actionType": "GoTo",
-                            "location": "Hawaii"
-                        }
+                        "actions": [
+                          {
+                            "param": {
+                                "type": "GoToActionParam",
+                                "actionType": "GoTo",
+                                "location": "Hawaii"
+                            }
+                          }
+                        ]
                     }
                 ]
             }
             """.trimIndent()
         )
-        val param = state.transitions["do_something"]?.param
+        val param = state.transitions["do_something"]?.actions?.first()?.param
         assertTrue(param is GoToActionParam)
 
         val actionParam = param as GoToActionParam
