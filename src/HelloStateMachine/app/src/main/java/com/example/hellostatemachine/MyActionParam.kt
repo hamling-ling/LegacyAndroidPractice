@@ -1,7 +1,9 @@
 package com.example.hellostatemachine
 
-import com.example.hellostatemachine.statemachine.ActionParam
 import kotlinx.serialization.Serializable
+
+@Serializable
+abstract class ActionParam
 
 @Serializable
 data class MyActionParam(
