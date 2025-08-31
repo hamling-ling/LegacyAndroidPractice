@@ -76,61 +76,86 @@ class PracticalStateMachineTest {
     }
 
     @Test
-    fun serializeTransition() {
-        val format = Json { serializersModule = createSerializerModule() }
-        val transition = format.decodeFromString<Transition<PracticalActionParam>>(
-            """
-            {
-                "eventName": "do_something",
-                "nextStateName": "in_process",
-                "actions": [
-                  {
-                    "param": {
-                      "type": "PlayContentActionParam",
-                      "actionType": "PlayContents",
-                      "contents": ["a.mp4", "b.mp4"]
-                    }
-                  }
-                ]  
-            }
-            """.trimIndent()
-        )
-        val param = transition.actions.first().param
-        assertTrue(param is PlayContentActionParam)
-        val actionParam = param as PlayContentActionParam
-        assertEquals(actionParam.actionType, "PlayContents")
-        assertEquals(actionParam.contents.size, 2)
-        assertEquals(actionParam.contents[0], "a.mp4")
-        assertEquals(actionParam.contents[1], "b.mp4")
-    }
-
-    @Test
     fun serializeState() {
         val format = Json { serializersModule = createSerializerModule() }
         val state = format.decodeFromString<State<PracticalActionParam>>(
             """
             {
-                "name": "${StateMachine.INITIAL_STATE_NAME}",
-                "childrenList": [],
-                "transitionList": [
-                    {
-                        "eventName": "do_something",
-                        "nextStateName": "in_process",
-                        "actions": [
-                          {
-                            "param": {
-                                "type": "GoToActionParam",
-                                "actionType": "GoTo",
-                                "location": "Hawaii"
-                            }
+              "name": "${StateMachine.INITIAL_STATE_NAME}",
+              "transitionList": [
+                {
+                  "eventName": "do_something",
+                  "nextStateName": "in_process"
+                }
+              ],
+              "actions": [
+                {
+                  "param": {
+                    "type": "GoToActionParam",
+                    "actionType": "GoTo",
+                    "location": "Hawaii"
+                  }
+                }
+              ]
+            }
+            """.trimIndent()
+        )
+        val param = state.actions.first().param
+        assertTrue(param is GoToActionParam)
+
+        val actionParam = param as GoToActionParam
+        assertEquals(actionParam.actionType, "GoTo")
+        assertEquals(actionParam.location, "Hawaii")
+    }
+
+    @Test
+    fun serializeStates() {
+        val format = Json { serializersModule = createSerializerModule() }
+        val stateMachine = format.decodeFromString<StateMachineDefinition<PracticalActionParam>>(
+            """
+            {
+                "states": [
+                  {
+                      "name": "${StateMachine.INITIAL_STATE_NAME}",
+                      "transitionList": [
+                        {
+                          "eventName": "do_something",
+                          "nextStateName": "in_process"
+                        }
+                      ],
+                      "actions": [
+                        {
+                          "param": {
+                            "type": "GoToActionParam",
+                            "actionType": "GoTo",
+                            "location": "Hawaii"
                           }
-                        ]
+                        }
+                      ]
+                  },
+                  {
+                      "name": "in_process",
+                      "transitionList": [
+                        {
+                          "eventName": "reset",
+                          "nextStateName": "${StateMachine.INITIAL_STATE_NAME}"
+                        }
+                      ],
+                      "actions": [
+                        {
+                          "param": {
+                            "type": "GoToActionParam",
+                            "actionType": "GoTo",
+                            "location": "Hawaii"
+                          }
+                        }
+                      ]
                     }
                 ]
             }
             """.trimIndent()
         )
-        val param = state.transitions["do_something"]?.actions?.first()?.param
+        val param = stateMachine.states.first().actions.first().param
         assertTrue(param is GoToActionParam)
 
         val actionParam = param as GoToActionParam

@@ -1,0 +1,437 @@
+{
+    "states": [
+        {
+            "name": "initial",
+            "actions": [
+                {
+                    "param": {
+                        "type": "GoToActionParam",
+                        "actionType": "GoTo",
+                        "location": "Home"
+                    }
+                }
+            ],
+            "transitionList": [
+                {
+                    "eventName": "robo.home.start",
+                    "nextStateName": "Home"
+                }
+            ]
+        },
+        {
+            "name": "Home",
+            "childrenList": [
+                {
+                    "name": "Started",
+                    "transitionList": [
+                        {
+                            "eventName": "robo.home.complete",
+                            "nextStateName": "Completed"
+                        },
+                        {
+                            "eventName": "robo.home.abort",
+                            "nextStateName": "Aborted"
+                        }
+                    ]
+                },
+                {
+                    "name": "Completed",
+                    "actions": [
+                        {
+                            "param": {
+                                "type": "RequestTimeBatteryActionParam",
+                                "actionType": "RequestTimeBattery"
+                            }
+                        }
+                    ],
+                    "transitionList": [
+                        {
+                            "eventName": "exfactors.update",
+                            "nextStateName": "Preparing",
+                            "conditions": ["service.in", "battery.good"]
+                        },
+                        {
+                            "eventName": "exfactors.update",
+                            "nextStateName": "OutOfService",
+                            "conditions": ["service.out"]
+                        },
+                        {
+                            "eventName": "exfactors.update",
+                            "nextStateName": "Charging",
+                            "conditions": ["battery.low"]
+                        }
+                    ]
+                },
+                {
+                    "name": "OutOfService",
+                    "actions": [
+                        {
+                            "param": {
+                                "type": "PlayContentActionParam",
+                                "actionType": "PlayContent",
+                                "contents": ["ouf_of_service.mp4"]
+                            }
+                        }
+                    ],
+                    "transitionList": [
+                        {
+                            "eventName": "exfactors.update",
+                            "nextStateName": "Preparing",
+                            "conditions": ["service.in", "battery.good"]
+                        }
+                    ]
+                },
+                {
+                    "name": "Charging",
+                    "actions": [
+                        {
+                            "param": {
+                                "type": "PlayContentActionParam",
+                                "actionType": "PlayContent",
+                                "contents": ["charging.mp4"]
+                            }
+                        }
+                    ],
+                    "transitionList": [
+                        {
+                            "eventName": "exfactors.update",
+                            "nextStateName": "Preparing",
+                            "conditions": ["service.in", "battery.good"]
+                        }
+                    ]
+                },
+                {
+                    "name": "Preparing",
+                    "actions": [
+                        {
+                            "param": {
+                                "type": "PlayContentActionParam",
+                                "actionType": "PlayContent",
+                                "contents": ["premove_entrance.mp4"]
+                            }
+                        },
+                        {
+                            "param": {
+                                    "type": "GoToActionParam",
+                                    "actionType": "GoTo",
+                                    "location": "Entrance"
+                            }
+                        }
+                    ],
+                    "transitionList": [
+                        {
+                            "eventName": "exfactors.update",
+                            "nextStateName": "Preparing",
+                            "conditions": ["service.in", "battery.good"]
+                        },
+                        {
+                            "eventName": "timeout",
+                            "nextStateName": "Prepared"
+                        }
+                    ],
+                    "timeoutSec": 10
+                },
+                {
+                    "name": "Prepared",
+                    "actions": [
+                        {
+                            "param": {
+                                "type": "GoToActionParam",
+                                "actionType": "GoTo",
+                                "location": "Entrance"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Aborted",
+                    "actions": [
+                        {
+                            "param": {
+                                "type": "PlayContentActionParam",
+                                "actionType": "PlayContent",
+                                "contents": ["abort.mp4"]
+                            }
+                        },
+                        {
+                            "param": {
+                                "type": "GoToActionParam",
+                                "actionType": "GoTo",
+                                "location": "Home"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "transitionList": [
+                {
+                    "eventName": "robo.home.start",
+                    "nextStateName": "Home"
+                },
+                {
+                    "eventName": "robo.entrance.start",
+                    "nextStateName": "Entrance"
+                }
+            ]
+        },
+        {
+            "name": "Entrance",
+            "childrenList": [
+                {
+                    "name": "Started",
+                    "actions": [
+                        {
+                            "param": {
+                                "type": "PlayContentActionParam",
+                                "actionType": "PlayContent",
+                                "contents": ["going_entrance.mp4"]
+                            }
+                        }
+                    ],
+                    "transitionList": [
+                        {
+                                "eventName": "robo.entrance.complete",
+                                "nextStateName": "Completed"
+                        },
+                        {
+                                "eventName": "robo.entrance.abort",
+                                "nextStateName": "Aborted"
+                        }
+                    ]
+                },
+                {
+                    "name": "Completed",
+                    "actions": [
+                        {
+                            "param": {
+                                "type": "PlayContentActionParam",
+                                "actionType": "PlayContent",
+                                "contents": ["waiting.mp4"]
+                            }
+                        }
+                    ],
+                    "transitionList": [
+                        {
+                            "eventName": "guide.start.requested",
+                            "nextStateName": "Preparing"
+                        },
+                        {
+                            "eventName": "exfactors.update",
+                            "nextStateName": "PreparingToServiceOut",
+                            "conditions": ["service.out"]
+                        },
+                        {
+                            "eventName": "exfactors.update",
+                            "nextStateName": "PreparingToCharge",
+                            "conditions": ["battery.low"]
+                        }
+                    ]
+                },
+                {
+                    "name": "Preparing",
+                    "actions": [
+                        {
+                            "param": {
+                                "type": "PlayContentActionParam",
+                                "actionType": "PlayContent",
+                                "contents": ["premove_elevator.mp4"]
+                            }
+                        }
+                    ],
+                    "transitionList": [
+                        {
+                            "eventName": "timeout",
+                            "nextStateName": "Prepared"
+                        }
+                    ],
+                    "timeoutSec": 10
+                },
+                {
+                    "name": "Prepared",
+                    "actions": [
+                        {
+                            "param": {
+                                "type": "GoToActionParam",
+                                "actionType": "GoTo",
+                                "location": "Elevator"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "PreparingToServiceOut",
+                    "actions": [
+                        {
+                            "param": {
+                                "type": "PlayContentActionParam",
+                                "actionType": "PlayContent",
+                                "contents": ["home_to_service_out.mp4"]
+                            }
+                        },
+                        {
+                            "param": {
+                                "type": "GoToActionParam",
+                                "actionType": "GoTo",
+                                "location": "Elevator"
+                            }
+                        }
+                    ],
+                    "transitionList": [
+                        {
+                            "eventName": "timeout",
+                            "nextStateName": "PreparedToServiceOut"
+                        }
+                    ]
+                },
+                {
+                    "name": "PreparedToServiceOut",
+                    "transitionList": [
+                    ]
+                },
+                {
+                    "name": "PreparingToCharge",
+                    "transitionList": [
+                        {
+                            "eventName": "timeout",
+                            "nextStateName": "PreparedToServiceOut"
+                        }
+                    ]
+                },
+                {
+                    "name": "PreparedToCharge",
+                    "transitionList": [
+                    ]
+                },
+                {
+                    "name": "Aborted",
+                    "transitionList": [
+                    ]
+                }
+            ],
+            "transitionList": [
+                {
+                    "eventName": "robo.elevator.start",
+                    "nextStateName": "Elevator"
+                },
+                {
+                    "eventName": "robo.home.start",
+                    "nextStateName": "Home"
+                }
+            ]
+        },
+        {
+            "name": "Entrance",
+            "childrenList": [
+                {
+                    "name": "Started",
+                    "actions": [
+                        {
+                            "param": {
+                                "type": "PlayContentActionParam",
+                                "actionType": "PlayContent",
+                                "contents": ["guiding.mp4"]
+                            }
+                        }
+                    ],
+                    "transitionList": [
+                        {
+                                "eventName": "robo.elevator.complete",
+                                "nextStateName": "Completed"
+                        },
+                        {
+                                "eventName": "robo.elevator.abort",
+                                "nextStateName": "Aborted"
+                        }
+                    ]
+                },
+                {
+                    "name": "Completed",
+                    "actions": [
+                        {
+                            "param": {
+                                "type": "PlayContentActionParam",
+                                "actionType": "PlayContent",
+                                "contents": ["elevator_button.mp4"]
+                            }
+                        }
+                    ],
+                    "timeoutSec": 10,
+                    "transitionList": [
+                        {
+                            "eventName": "timeout",
+                            "nextStateName": "Preparing"
+                        }
+                    ]
+                },
+                {
+                    "name": "Preparing",
+                    "actions": [
+                        {
+                            "param": {
+                                "type": "PlayContentActionParam",
+                                "actionType": "PlayContent",
+                                "contents": ["premove_home.mp4"]
+                            }
+                        }
+                    ],
+                    "timeoutSec": 10,
+                    "transitionList": [
+                        {
+                            "eventName": "timeout",
+                            "nextStateName": "Prepared"
+                        }
+                    ]
+                },
+                {
+                    "name": "Prepared",
+                    "actions": [
+                        {
+                            "param": {
+                                "type": "PlayContentActionParam",
+                                "actionType": "PlayContent",
+                                "contents": ["home_to_service_out.mp4"]
+                            }
+                        },
+                        {
+                            "param": {
+                                "type": "GoToActionParam",
+                                "actionType": "GoTo",
+                                "location": "Entrance"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Aborted",
+                    "actions": [
+                        {
+                            "param": {
+                                "type": "PlayContentActionParam",
+                                "actionType": "PlayContent",
+                                "contents": ["aborted.mp4"]
+                            }
+                        },
+                        {
+                            "param": {
+                                "type": "GoToActionParam",
+                                "actionType": "GoTo",
+                                "location": "Entrance"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "transitionList": [
+                {
+                    "eventName": "robo.entrance.start",
+                    "nextStateName": "Entrance"
+                },
+                {
+                    "eventName": "robo.home.start",
+                    "nextStateName": "Home"
+                }
+            ]
+        }
+
+    ]
+}

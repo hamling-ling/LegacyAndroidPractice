@@ -22,19 +22,18 @@ class StateMachineTest {
           "states": [
             {
               "name": "${StateMachine.INITIAL_STATE_NAME}",
-              "childrenList": [],
               "transitionList": [
                 {
                   "eventName": "do_something",
-                  "nextStateName": "in_process",
-                  "actions": [
-                      {
-                          "param": {
-                            "param1": "param1 for initial.do_something",
-                            "param2": "param2 for initial.do_something"
-                          }
-                      }
-                  ]
+                  "nextStateName": "in_process"
+                }
+              ],
+              "actions": [
+                {
+                  "param": {
+                    "param1": "param1 for ${StateMachine.INITIAL_STATE_NAME} state action",
+                    "param2": "param2 for ${StateMachine.INITIAL_STATE_NAME} state action"
+                  }
                 }
               ]
             },
@@ -43,49 +42,39 @@ class StateMachineTest {
               "childrenList": [
                 {
                   "name": "preparing",
-                  "childrenList": [],
                   "transitionList": [
                     {
                       "eventName": "prep_done",
-                      "nextStateName": "processing",
-                      "actions": [
-                        {
-                          "param": {
-                           "param1": "param1 for in_process.preparing.prep_done",
-                           "param2": "param2 for in_process.preparing.prep_done"
-                          }
-                        }
-                      ]
+                      "nextStateName": "processing"
+                    }
+                  ],
+                  "actions": [
+                    {
+                      "param": {
+                        "param1": "param1 for in_process.preparing state action",
+                        "param2": "param2 for in_process.preparing state action"
+                      }
                     }
                   ]
                 },
                 {
                   "name": "processing",
-                  "childrenList": [],
                   "transitionList": [
                     {
                       "eventName": "processing_done",
-                      "nextStateName": "done",
-                      "actions": [
-                        {
-                          "param": {
-                            "param1": "param1 for processing.processing.processing_done",
-                            "param2": "param2 for processing.processing.processing_done"
-                          }
-                        }
-                      ]
+                      "nextStateName": "done"
                     },
                     {
                       "eventName": "timeout",
-                      "nextStateName": "fail",
-                      "actions": [
-                        {
-                          "param": {
-                            "param1": "param1 for processing.processing.timeout",
-                            "param2": "param2 for processing.processing.timeout"
-                          }
-                        }
-                      ]
+                      "nextStateName": "fail"
+                    }
+                  ],
+                  "actions": [
+                    {
+                      "param": {
+                        "param1": "param1 for in_process.processing state",
+                        "param2": "param2 for in_process.processing state"
+                      }
                     }
                   ],
                   "timeoutSec": 1
@@ -94,51 +83,41 @@ class StateMachineTest {
               "transitionList": [
                 {
                   "eventName": "interrupt",
-                  "nextStateName": "fail",
-                  "actions": [
-                    {
-                      "param": {
-                        "param1": "param1 for in_process.interrupt",
-                        "param2": "param2 for in_process.interrupt"
-                      }
-                    }
-                  ]
+                  "nextStateName": "fail"
                 }
               ]
             },
             {
               "name": "done",
-              "childrenList": [],
               "transitionList": [
                 {
                   "eventName": "reset",
-                  "nextStateName": "${StateMachine.INITIAL_STATE_NAME}",
-                  "actions": [
-                    {
-                      "param": {
-                        "param1": "param1 for done.reset",
-                        "param2": "param2 for done.reset"
-                      }
-                    }
-                  ]
+                  "nextStateName": "${StateMachine.INITIAL_STATE_NAME}"
+                }
+              ],
+              "actions": [
+                {
+                  "param": {
+                    "param1": "param1 for done.reset",
+                    "param2": "param2 for done.reset"
+                  }
                 }
               ]
             },
             {
               "name": "fail",
-              "childrenList": [],
               "transitionList": [
                 {
                   "eventName": "reset",
-                  "nextStateName": "${StateMachine.INITIAL_STATE_NAME}",
-                  "actions": [
-                    {
-                      "param": {
-                        "param1": "param1 for fail.reset",
-                        "param2": "param2 for fail.reset"
-                      }
-                    }
-                  ]
+                  "nextStateName": "${StateMachine.INITIAL_STATE_NAME}"
+                }
+              ],
+              "actions": [
+                {
+                  "param": {
+                    "param1": "param1 for fail.reset",
+                    "param2": "param2 for fail.reset"
+                  }
                 }
               ]
             }
@@ -150,32 +129,32 @@ class StateMachineTest {
     fun setUp() {
         states = Json.decodeFromString<StateMachineDefinition<MyActionParam>>(jsonString)
 
-        states[INITIAL_STATE_NAME]!!.transitions["do_something"]!!.actions[0].action = { param ->
-            println("initial.do_something event")
+        states[INITIAL_STATE_NAME]!!.actions[0].action = { param ->
+            println("initial state action")
             println("\tparam1:${param.param1}")
             println("\tparam2:${param.param2}")
         }
 
-        states["in_process"]!!.children["preparing"]!!.transitions["prep_done"]!!.actions[0].action = { param ->
-            println("in_process.preparing.prep_done event")
+        states["in_process"]!!.children["preparing"]!!.actions[0].action = { param ->
+            println("in_process.preparing state action")
             println("\tparam1:${param.param1}")
             println("\tparam2:${param.param2}")
         }
 
-        states["in_process"]!!.children["processing"]!!.transitions["processing_done"]!!.actions[0].action = { param ->
-            println("in_process.processing.processing_done event")
+        states["in_process"]!!.children["processing"]!!.actions[0].action = { param ->
+            println("in_process.processing state action")
             println("\tparam1:${param.param1}")
             println("\tparam2:${param.param2}")
         }
 
-        states["done"]!!.transitions["reset"]!!.actions[0].action = { param ->
-            println("done.reset event")
+        states["done"]!!.actions[0].action = { param ->
+            println("done state action")
             println("\tparam1:${param.param1}")
             println("\tparam2:${param.param2}")
         }
 
-        states["fail"]!!.transitions["reset"]!!.actions[0].action = { param ->
-            println("fail.reset event")
+        states["fail"]!!.actions[0].action = { param ->
+            println("fail state event")
             println("\tparam1:${param.param1}")
             println("\tparam2:${param.param2}")
         }
