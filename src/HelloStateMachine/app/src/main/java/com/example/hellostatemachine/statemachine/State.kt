@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class State<T>(
     val name: String,
-    val childrenList: List<State<T>>,
-    val transitionList: List<Transition<T>>,
+    val childrenList: List<State<T>> = listOf(),
+    val transitionList: List<Transition<T>> = listOf(),
     val timeoutSec: Long? = null
 ) {
     val children: Map<String, State<T>> = childrenList.associateBy({it.name}, {it})
