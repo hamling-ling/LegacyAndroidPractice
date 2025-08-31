@@ -162,4 +162,16 @@ class PracticalStateMachineTest {
         assertEquals(actionParam.actionType, "GoTo")
         assertEquals(actionParam.location, "Hawaii")
     }
+
+    @Test
+    fun serializeRobot() {
+        val inputStream = this.javaClass.classLoader?.getResourceAsStream("practical_state_machine.json")
+        val stateMachineJson: String = inputStream?.bufferedReader().use { it?.readText() ?: "" }
+
+        val format = Json { serializersModule = createSerializerModule() }
+        val stateMachine = format.decodeFromString<StateMachineDefinition<PracticalActionParam>>(
+            stateMachineJson
+        )
+        assertEquals(StateMachine.INITIAL_STATE_NAME, stateMachine.states.first().name)
+    }
 }
