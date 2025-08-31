@@ -29,6 +29,12 @@ class StateMachine<T>(
             _parents.joinToString(".") { it.name } + "." + _currentState.name
         }
 
+    init {
+        _currentState.actions.forEach { action ->
+            action.action?.invoke(action.param)
+        }
+    }
+
     // Process Event then Transit State
     fun processEvent(event: String) {
         synchronized(_lock) {
@@ -40,9 +46,6 @@ class StateMachine<T>(
                 val parents = stateParentPair.second
 
                 val transition = state[event]!!
-                transition.actions.forEach { action ->
-                    action.action?.invoke(action.param)
-                }
 
                 findNextState(parents, transition.nextStateName)?.let { nextStateParentsPair ->
                     val nextState = nextStateParentsPair.first
@@ -50,6 +53,10 @@ class StateMachine<T>(
 
                     _currentState = nextState
                     _parents = nextParents.toMutableList()
+                    _currentState.actions.forEach { action ->
+                        action.action?.invoke(action.param)
+                    }
+
 
                     // Set timeout timer
                     _currentState.timeoutSec?.let {

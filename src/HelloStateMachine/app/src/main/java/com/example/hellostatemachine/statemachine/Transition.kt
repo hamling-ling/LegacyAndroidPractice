@@ -6,5 +6,4 @@ import kotlinx.serialization.Serializable
 data class Transition<T>(
     val eventName: String,
     val nextStateName: String,
-    val actions: List<Action<T>> = listOf()
 )

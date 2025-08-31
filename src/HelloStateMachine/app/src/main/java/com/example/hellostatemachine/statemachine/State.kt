@@ -11,6 +11,7 @@ data class State<T>(
 ) {
     val children: Map<String, State<T>> = childrenList.associateBy({it.name}, {it})
     val transitions: Map<String, Transition<T>> = transitionList.associateBy({it.eventName}, {it})
+    val actions: List<Action<T>> = listOf()
 
     operator fun get(key: String): Transition<T>? {
         return transitions[key]
